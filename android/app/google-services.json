@@ -1,0 +1,88 @@
+{
+  "project_info": {
+    "project_number": "1075819000656",
+    "project_id": "property-match-258",
+    "storage_bucket": "property-match-258.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1075819000656:android:e13279ae56ccd0e536f255",
+        "android_client_info": {
+          "package_name": "com.example.property_match_258_v5"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1075819000656-s68t420irv3ki7ogsp0c54kkp9oq42ak.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADJJgAlo8LNDom4xsJjQvwiCc5accb4Y8"
+        },
+        {
+          "current_key": "AIzaSyAY-jSkWyDY4TbEaTxsPjCirf1micpvKns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1075819000656-s68t420irv3ki7ogsp0c54kkp9oq42ak.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1075819000656-6pq6t5msaa0n3mt2iss0rfv42pq8e0b8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.reesApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1075819000656:android:b0047e9a58a9cb5736f255",
+        "android_client_info": {
+          "package_name": "com.example.rees_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1075819000656-s68t420irv3ki7ogsp0c54kkp9oq42ak.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADJJgAlo8LNDom4xsJjQvwiCc5accb4Y8"
+        },
+        {
+          "current_key": "AIzaSyAY-jSkWyDY4TbEaTxsPjCirf1micpvKns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1075819000656-s68t420irv3ki7ogsp0c54kkp9oq42ak.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1075819000656-6pq6t5msaa0n3mt2iss0rfv42pq8e0b8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.reesApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
