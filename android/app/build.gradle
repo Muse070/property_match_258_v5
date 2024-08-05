@@ -60,6 +60,16 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    // Add your release signing configuration (replace placeholders with actual values)
+    signingConfigs {
+        release {
+            storeFile file("C:/Users/Musen/StudioProjects/property_match_258_v5/android/release_keystore.jks")  // Path to your release keystore file
+            storePassword "123,gmail"  // Password for your release keystore
+            keyAlias "release_keystore" // Alias you used when creating the keystore
+            keyPassword "123,gmail" // Password for the key (if different from keystore password)
+        }
+    }
 }
 
 flutter {
