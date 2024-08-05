@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:math';
 import 'dart:ui';
 
@@ -9,8 +10,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:property_match_258_v5/features/core/bottom_app_bar/profile/screens/agent_profile/dashboard.dart';
+import 'package:property_match_258_v5/features/core/bottom_app_bar/profile/screens/agent_profile/dashboard_options/messages/messages.dart';
 import 'package:property_match_258_v5/features/core/bottom_app_bar/profile/screens/edit_profile/edit_profile.dart';
 import 'package:property_match_258_v5/repository/properties_repository/property_repository.dart';
+import 'package:property_match_258_v5/repository/user_repository/agent_repository.dart';
 import 'package:property_match_258_v5/repository/user_repository/user_repository.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
@@ -31,6 +34,7 @@ class AgentProfilePage extends StatefulWidget {
 class _AgentProfilePageState extends State<AgentProfilePage>
     with TickerProviderStateMixin {
   final _userRepo = Get.find<UserRepository>();
+  final _agentRepo = Get.find<AgentRepository>();
   final _propertyController = Get.find<PropertyRepository>();
   late Future<UserModel?>? userDataFuture;
   final _chatRepo = Get.find<ChatRepository>();
@@ -99,13 +103,15 @@ class _AgentProfilePageState extends State<AgentProfilePage>
 
   PreferredSizeWidget appBar(Rx<UserModel?> user) {
     return AppBar(
-      title: Text(
-        "${user.value!.firstName} ${user.value!.lastName}",
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w500,
-          fontSize: 14.sp,
-          fontFamily: "Roboto",
+      title: Obx(() =>
+        Text(
+          "${user.value!.firstName} ${user.value!.lastName}",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: 14.sp,
+            fontFamily: "Roboto",
+          ),
         ),
       ),
       backgroundColor: Colors.black87,
@@ -143,8 +149,7 @@ class _AgentProfilePageState extends State<AgentProfilePage>
 
   @override
   Widget build(BuildContext context) {
-    Rx<UserModel?> user = _userRepo.currentUser;
-    Size size = MediaQuery.of(context).size;
+    Rx<AgentModel?> user = _agentRepo.agentModel;
     return Scaffold(
       appBar: appBar(user),
       body: FutureBuilder(
@@ -172,7 +177,7 @@ class _AgentProfilePageState extends State<AgentProfilePage>
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _appBar(user.value!),
+                              _appBar(user),
                               SizedBox(height: 1.5.h,),
                               Text(
                                 "Property Management",
@@ -190,7 +195,7 @@ class _AgentProfilePageState extends State<AgentProfilePage>
                                     final length = properties.length;
 
                                     return SizedBox(
-                                      child: _body(size, length),
+                                      child: _body(length),
                                     );
                                   } else {
                                     return _shimmeringCard();
@@ -391,8 +396,7 @@ class _AgentProfilePageState extends State<AgentProfilePage>
             Center(
               child: TextButton(
                 onPressed: () {
-                  // Navigate to a new screen where all messages are displayed
-                  // Get.to(() => AllChatRoomsPage());
+                  Get.to(() => const Messages());
                 },
                 child: Text(
                   'View More',
@@ -441,42 +445,131 @@ class _AgentProfilePageState extends State<AgentProfilePage>
     );
   }
 
-  Widget _appBar(UserModel user) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            user.imageUrl != null && user.imageUrl!.isNotEmpty
-                ? CircleAvatar(
-              radius: 10.w,
-              backgroundImage: NetworkImage(user.imageUrl!),
-            )
-                : ProfilePicture(
-              name: user.firstName.isNotEmpty
-                  ? "${user.firstName} ${user.lastName}"
-                  : "",
-              radius: 10.w,
-              fontsize: 18.sp,
-            ),
-            SizedBox(width: 6.w),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+  Widget _appBar(Rx<AgentModel?> user) {
+    return Obx(() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              user.value?.imageUrl != null && user.value!.imageUrl!.isNotEmpty
+                  ? CircleAvatar(
+                radius: 10.w,
+                backgroundImage: NetworkImage(user.value!.imageUrl!),
+              )
+                  : ProfilePicture(
+                name: user.value!.firstName.isNotEmpty
+                    ? "${user.value?.firstName} ${user.value?.lastName}"
+                    : "",
+                radius: 10.w,
+                fontsize: 18.sp,
+              ),
+              SizedBox(width: 6.w),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      FaIcon(
+                        FontAwesomeIcons.solidEnvelope,
+                        size: 12.sp,
+                      ),
+                      SizedBox(
+                        width: 2.w,
+                      ),
+                      Text(
+                        user.value!.email,
+                        style: TextStyle(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 10.sp,
+                            fontFamily: "Roboto"),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      FaIcon(
+                        FontAwesomeIcons.phone,
+                        size: 12.sp,
+                      ),
+                      SizedBox(
+                        width: 2.w,
+                      ),
+                      Text(
+                        user.value!.phoneNo,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 10.sp,
+                            fontFamily: "Roboto"),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 1.h,
+                  ),
+                  // Row(
+                  //   children: [
+                  //     ClipRRect(
+                  //       borderRadius: BorderRadius.circular(100),
+                  //       child: BackdropFilter(
+                  //         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                  //         child: Container(
+                  //           width: 22.w,
+                  //           decoration: BoxDecoration(
+                  //             color: Colors.grey.shade500.withOpacity(0.5),
+                  //             borderRadius: BorderRadius.circular(100),
+                  //           ),
+                  //           child: Center(
+                  //             child: Text(
+                  //               "Verified Agent",
+                  //               style: TextStyle(
+                  //                   color: Colors.black,
+                  //                   fontSize: 8.sp,
+                  //                   fontWeight: FontWeight.w500,
+                  //                   fontFamily: "Roboto"), // Adjust as needed
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     SizedBox(
+                  //       width: 1.25.h,
+                  //     ),
+                  //     _verifiedIconWidget(),
+                  //   ],
+                  // ),
+                ],
+              )
+            ],
+          ),
+          SizedBox(
+            height: 1.5.h,
+          ),
+          Text(
+            "Agent Bio",
+            textAlign: TextAlign.start,
+            style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w500),
+          ),
+          SizedBox(
+            height: 14.h,
+            width: 100.w,
+            child: Card(
+              elevation: 0.2,
+              color: Colors.white,
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    FaIcon(
-                      FontAwesomeIcons.solidEnvelope,
-                      size: 12.sp,
-                    ),
-                    SizedBox(
-                      width: 2.w,
-                    ),
                     Text(
-                      user.email,
+                      user.value!.bio,
                       style: TextStyle(
                           color: Colors.black87,
                           fontWeight: FontWeight.w500,
@@ -485,105 +578,15 @@ class _AgentProfilePageState extends State<AgentProfilePage>
                     ),
                   ],
                 ),
-                Row(
-                  children: [
-                    FaIcon(
-                      FontAwesomeIcons.phone,
-                      size: 12.sp,
-                    ),
-                    SizedBox(
-                      width: 2.w,
-                    ),
-                    Text(
-                      user.phoneNo,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 10.sp,
-                          fontFamily: "Roboto"),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 1.h,
-                ),
-                // Row(
-                //   children: [
-                //     ClipRRect(
-                //       borderRadius: BorderRadius.circular(100),
-                //       child: BackdropFilter(
-                //         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                //         child: Container(
-                //           width: 22.w,
-                //           decoration: BoxDecoration(
-                //             color: Colors.grey.shade500.withOpacity(0.5),
-                //             borderRadius: BorderRadius.circular(100),
-                //           ),
-                //           child: Center(
-                //             child: Text(
-                //               "Verified Agent",
-                //               style: TextStyle(
-                //                   color: Colors.black,
-                //                   fontSize: 8.sp,
-                //                   fontWeight: FontWeight.w500,
-                //                   fontFamily: "Roboto"), // Adjust as needed
-                //             ),
-                //           ),
-                //         ),
-                //       ),
-                //     ),
-                //     SizedBox(
-                //       width: 1.25.h,
-                //     ),
-                //     _verifiedIconWidget(),
-                //   ],
-                // ),
-              ],
-            )
-          ],
-        ),
-        SizedBox(
-          height: 1.5.h,
-        ),
-        Text(
-          "Agent Bio",
-          textAlign: TextAlign.start,
-          style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w500),
-        ),
-        SizedBox(
-          height: 14.h,
-          width: 100.w,
-          child: Card(
-            elevation: 0.2,
-            color: Colors.white,
-            child: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Passionate Real Estate Agent with 10+ years of experience. "
-                        "Specializing in residential properties. "
-                        "Committed to finding your dream home. Contact me!",
-                    style: TextStyle(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 10.sp,
-                        fontFamily: "Roboto"),
-                  ),
-                ],
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _body(Size size, int? numOfListings) {
+  Widget _body(int? numOfListings) {
     return Dashboard(
       numOfListings: numOfListings ?? 0,
     );
